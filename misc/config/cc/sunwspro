@@ -44,6 +44,7 @@ sparc64    -> "-xarch=v9"
 
 <arch>
 ia32
+amd64
 sparc32
 sparc64
 </arch>

@@ -11,6 +11,7 @@ all
 
 <arch>
 ia32
+amd64
 sparc32
 sparc64
 </arch>
