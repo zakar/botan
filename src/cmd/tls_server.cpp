@@ -126,7 +126,7 @@ int tls_server(int argc, char* argv[])
    {
    if(argc != 4 && argc != 5)
       {
-      std::cout << "Usage: " << argv[0] << " server.crt server.key port [tcp|udp]" << std::endl;
+      std::cout << "Usage: " << argv[0] << " server.crt server.key port [tcp|udp|http]" << std::endl;
       return 1;
       }
 
@@ -135,7 +135,7 @@ int tls_server(int argc, char* argv[])
    const int port = to_u32bit(argv[3]);
    const std::string transport = (argc >= 5) ? argv[4] : "tcp";
 
-   const bool is_tcp = (transport == "tcp");
+   const bool is_tcp = (transport == "tcp" || transport == "http");
 
    try
       {
@@ -235,8 +235,15 @@ int tls_server(int argc, char* argv[])
                while(server.is_active() && !pending_output.empty())
                   {
                   std::string s = pending_output.front();
+
+                  if (transport == "http") {
+                      if (s.substr(0, 3) == "GET") {
+                          server.send("HTTP/1.0 200 ok\r\nContent-type: text/html\r\nContent-length: 5\r\n\r\ntest\n");
+                      }
+                  } else {
+                      server.send(s);
+                  }
                   pending_output.pop_front();
-                  server.send(s);
 
                   if(s == "quit\n")
                      server.close();
