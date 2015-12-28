@@ -18,6 +18,8 @@
 #include <botan/secqueue.h>
 
 #include "credentials.h"
+#include <netinet/tcp.h>
+#include <sys/socket.h>
 
 using namespace Botan;
 
@@ -184,9 +186,11 @@ int tls_server(int argc, char* argv[])
             {
             int fd;
 
-            if(is_tcp)
+            if(is_tcp) {
                fd = ::accept(server_fd, nullptr, nullptr);
-            else
+               int on = 1;
+               ::setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char*)(&on), sizeof(on));
+            } else
                {
                struct sockaddr_in from;
                socklen_t from_len = sizeof(sockaddr_in);
